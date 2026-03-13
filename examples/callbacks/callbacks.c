@@ -34,10 +34,10 @@ static char* codepoint_to_utf8(u32 codepoint) {
 }
 
 static
-void errorfunc(RGFW_debugType type, RGFW_errorCode err, const char* msg) {
-    if (type != RGFW_typeError || err == RGFW_noError) return;
+void errorfunc(const RGFW_debugInfo* info) {
+    if (info->type != RGFW_typeError || info->code == RGFW_noError) return;
 
-    printf("RGFW ERROR: %s\n", msg);
+    printf("RGFW ERROR: %s\n", info->msg);
 }
 
 static
@@ -177,25 +177,29 @@ int main(void) {
     RGFW_window_setExitKey(window, RGFW_escape);
 
     RGFW_setDebugCallback(errorfunc);
-    RGFW_setScaleUpdatedCallback(scaleUpdatedfunc);
-	RGFW_setWindowMovedCallback(windowmovefunc);
-	RGFW_setWindowResizedCallback(windowresizefunc);
-    RGFW_setWindowMinimizedCallback(windowminimizefunc);
-    RGFW_setWindowRestoredCallback(windowrestorefunc);
-    RGFW_setWindowMaximizedCallback(windowmaximizefunc);
-	RGFW_setWindowCloseCallback(windowclosefunc);
-	RGFW_setMousePosCallback(mouseposfunc);
-
-	RGFW_setMouseScrollCallback(scrollfunc);
-	RGFW_setWindowRefreshCallback(windowrefreshfunc);
-	RGFW_setWindowFocusCallback(windowfocusfunc);
-	RGFW_setMouseNotifyCallback(mouseNotifyfunc);
-	RGFW_setDataDropCallback(dropfunc);
-	RGFW_setDataDragCallback(dragfunc);
-	RGFW_setKeyCharCallback(keyCharfunc);
-	RGFW_setKeyCallback((RGFW_genericfunc)keyfunc);
-	RGFW_setMouseButtonCallback(mousebuttonfunc);
-	RGFW_setMonitorCallback(monitorfunc);
+    RGFW_setEventCallback(RGFW_scaleUpdated, scaleUpdatedfunc);
+	RGFW_setEventCallback(RGFW_windowMoved, windowmovefunc);
+	RGFW_setEventCallback(RGFW_windowResized, windowresizefunc);
+    RGFW_setEventCallback(RGFW_windowMaximized, windowminimizefunc);
+    RGFW_setEventCallback(RGFW_windowRestored, windowrestorefunc);
+    RGFW_setEventCallback(RGFW_windowMaximized, windowmaximizefunc);
+	RGFW_setEventCallback(RGFW_windowClose, windowclosefunc);
+	RGFW_setEventCallback(RGFW_mousePosChanged, mouseposfunc);
+	RGFW_setEventCallback(RGFW_mouseScroll, scrollfunc);
+	RGFW_setEventCallback(RGFW_windowRefresh, windowrefreshfunc);
+	RGFW_setEventCallback(RGFW_windowFocusIn, windowfocusfunc);
+	RGFW_setEventCallback(RGFW_windowFocusOut, windowfocusfunc);
+	RGFW_setEventCallback(RGFW_mouseEnter, mouseNotifyfunc);
+	RGFW_setEventCallback(RGFW_mouseLeave, mouseNotifyfunc);
+	RGFW_setEventCallback(RGFW_dataDrop, dropfunc);
+	RGFW_setEventCallback(RGFW_dataDrag, dragfunc);
+	RGFW_setEventCallback(RGFW_keyChar, keyCharfunc);
+	RGFW_setEventCallback(RGFW_keyPressed, (RGFW_genericfunc)keyfunc);
+	RGFW_setEventCallback(RGFW_keyReleased, (RGFW_genericfunc)keyfunc);
+	RGFW_setEventCallback(RGFW_mouseButtonPressed, mousebuttonfunc);
+	RGFW_setEventCallback(RGFW_mouseButtonReleased, mousebuttonfunc);
+	RGFW_setEventCallback(RGFW_monitorConnected, monitorfunc);
+	RGFW_setEventCallback(RGFW_monitorDisconnected, monitorfunc);
 
     while (RGFW_window_shouldClose(window) == 0) {
 		RGFW_pollEvents();

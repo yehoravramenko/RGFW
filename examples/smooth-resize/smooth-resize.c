@@ -38,8 +38,8 @@ void refresh(const RGFW_event* e) { RGFW_UNUSED(e); printf("refresh\n"); }
 int main(void) {
     RGFW_window* win = RGFW_createWindow("a window", 0, 0, 300, 100, RGFW_windowCenter | RGFW_windowOpenGL);
     RGFW_window_setExitKey(win, RGFW_escape);
-    RGFW_setWindowRefreshCallback(refresh);
-    RGFW_setWindowResizedCallback(resize);
+    RGFW_setEventCallback(RGFW_windowRefresh, refresh);
+    RGFW_setEventCallback(RGFW_windowResized, resize);
 
     RGFW_event event;
     while (RGFW_window_shouldClose(win) == RGFW_FALSE) {
