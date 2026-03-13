@@ -3706,7 +3706,7 @@ void RGFW_debugCallback(RGFW_debugType type, RGFW_errorCode code, const char* ms
 	info.code = code;
 	info.msg = msg;
 
-	if (_RGFW->debugCallbackSrc) _RGFW->debugCallbackSrc(&info);
+	if (_RGFW && _RGFW->debugCallbackSrc) _RGFW->debugCallbackSrc(&info);
 
     #ifdef RGFW_DEBUG
 	switch (type) {
@@ -3827,12 +3827,13 @@ void RGFW_deinit_ptr(RGFW_info* info) {
 
     RGFW_setInfo(info);
 	RGFW_unloadEGL();
+
+	RGFW_debugCallback(RGFW_typeInfo, RGFW_infoGlobal, "global context deinitialized");
 	RGFW_deinitPlatform();
 
     _RGFW->root = NULL;
     _RGFW->windowCount = 0;
     RGFW_setInfo(NULL);
-	RGFW_debugCallback(RGFW_typeInfo, RGFW_infoGlobal, "global context deinitialized");
 }
 
 RGFW_window* RGFW_createWindow(const char* name, i32 x, i32 y, i32 w, i32 h, RGFW_windowFlags flags) {
