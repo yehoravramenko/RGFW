@@ -33,12 +33,12 @@ static char* codepoint_to_utf8(u32 codepoint) {
    return utf8;
 }
 
-/*static
+static
 void errorfunc(RGFW_debugType type, RGFW_errorCode err, const char* msg) {
     if (type != RGFW_typeError || err == RGFW_noError) return;
 
     printf("RGFW ERROR: %s\n", msg);
-}*/
+}
 
 static
 void scaleUpdatedfunc(const RGFW_event* e) {
@@ -176,7 +176,7 @@ int main(void) {
     window = RGFW_createWindow("RGFW Callbacks", 500, 500, 500, 500, RGFW_windowCenter | RGFW_windowAllowDND);
     RGFW_window_setExitKey(window, RGFW_escape);
 
-//    RGFW_setDebugCallback(errorfunc);
+    RGFW_setDebugCallback(errorfunc);
     RGFW_setScaleUpdatedCallback(scaleUpdatedfunc);
 	RGFW_setWindowMovedCallback(windowmovefunc);
 	RGFW_setWindowResizedCallback(windowresizefunc);
