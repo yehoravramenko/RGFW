@@ -855,6 +855,14 @@ typedef RGFW_ENUM(i32, RGFW_eventWait) {
 	RGFW_eventWaitNext = -1
 };
 
+/*! @brief generic event callback function type */
+typedef void (*RGFW_genericFunc)(const RGFW_event* e);
+
+/*! brief structure that holds an array to callback data*/
+typedef struct RGFW_callbacks {
+	RGFW_genericFunc arr[RGFW_eventCount]; /*!< an array of all the callbacks */
+} RGFW_callbacks;
+
 /*! @brief optional bitwise arguments for making a windows, these can be OR'd together */
 typedef RGFW_ENUM(u32, RGFW_windowFlags) {
 	RGFW_windowNoBorder = RGFW_BIT(0), /*!< the window doesn't have a border */
@@ -954,49 +962,7 @@ typedef struct RGFW_debugInfo {
 } RGFW_debugInfo;
 
 /*! @brief callback function type for debug messags */
-typedef void (* RGFW_debugfunc)(const RGFW_debugInfo* info);
-
-/*! @brief RGFW_windowMoved, the window and its new rect value  */
-typedef void (* RGFW_windowMovedfunc)(const RGFW_windowUpdateEvent* e);
-/*! @brief RGFW_windowResized, the window and its new rect value  */
-typedef void (* RGFW_windowResizedfunc)(const RGFW_windowUpdateEvent* e);
-/*! @brief RGFW_windowRestored, the window and its new rect value  */
-typedef void (* RGFW_windowRestoredfunc)(const RGFW_windowUpdateEvent* e);
-/*! @brief RGFW_windowMaximized, the window and its new rect value  */
-typedef void (* RGFW_windowMaximizedfunc)(const RGFW_windowUpdateEvent* e);
-/*! @brief RGFW_windowMinimized, the window and its new rect value  */
-typedef void (* RGFW_windowMinimizedfunc)(const RGFW_windowUpdateEvent* e);
-/*! @brief RGFW_windowClose, the window that was closed */
-typedef void (* RGFW_windowClosefunc)(const RGFW_commonEvent* e);
-/*! @brief RGFW_windowFocusIn / RGFW_windowFocusOut, the window who's focus has changed and if its in focus */
-typedef void (* RGFW_windowFocusfunc)(const RGFW_windowFocusEvent* e);
-/*! @brief RGFW_mouseEnter / RGFW_mouseLeave, the window that changed, the point of the mouse (enter only) and if the mouse has entered */
-typedef void (* RGFW_mouseNotifyfunc)(const RGFW_mousePosEvent* e);
-/*! @brief RGFW_mousePosChanged, the window that the move happened on, and the new point of the mouse  */
-typedef void (* RGFW_mousePosfunc)(const RGFW_mousePosEvent* e);
-/*! @brief RGFW_dataDrag, the window, the point of the drop on the windows */
-typedef void (* RGFW_dataDragfunc)(const RGFW_dataDragEvent* e);
-/*! @brief RGFW_windowRefresh, the window that needs to be refreshed */
-typedef void (* RGFW_windowRefreshfunc)(const RGFW_windowUpdateEvent* e);
-/*! @brief RGFW_keyChar, the window that got the event, the unicode key value */
-typedef void (* RGFW_keyCharfunc)(const RGFW_keyCharEvent* e);
-/*! @brief RGFW_mouseButtonPressed / RGFW_mouseButtonReleased, the window that got the event, the button that was pressed, the scroll value, if it was a press (else it's a release)  */
-
-/*! @brief RGFW_keyPressed / RGFW_keyReleased, the window that got the event, the mapped key, the physical key, the string version, the state of the mod keys, if it was a press (else it's a release) */
-typedef void (* RGFW_keyfunc)(const RGFW_keyEvent* e);
-/*! @brief RGFW_mouseButtonPressed / RGFW_mouseButtonReleased, the window that got the event, the button that was pressed, the scroll value, if it was a press (else it's a release)  */
-typedef void (* RGFW_mouseButtonfunc)(const RGFW_mouseButtonEvent* e);
-/*! @brief RGFW_mouseScroll, the window that got the event, the x scroll value, the y scroll value */
-typedef void (* RGFW_mouseScrollfunc)(const RGFW_mouseDeltaEvent* e);
-/*! @brief RGFW_dataDrop the window that had the drop, the drop data and the number of files dropped */
-typedef void (* RGFW_dataDropfunc)(const RGFW_dataDropEvent* e);
-/*! @brief RGFW_scaleUpdated, the window the event was sent to, content scaleX, content scaleY */
-typedef void (* RGFW_scaleUpdatedfunc)(const RGFW_scaleUpdatedEvent* e);
-/*! @brief RGFW_monitorConnected / RGFW_monitorDisconnected, there was a monitor connected/disconnected */
-typedef void (* RGFW_monitorfunc)(const RGFW_monitorEvent* e);
-
-/*! @brief generic event callback function type */
-typedef void (*RGFW_genericfunc)(const RGFW_event* e);
+typedef void (* RGFW_debugFunc)(const RGFW_debugInfo* info);
 
 /*! @brief function pointer equivalent of void* */
 typedef void (*RGFW_proc)(void);
@@ -1434,10 +1400,26 @@ RGFWDEF void RGFW_setQueueEvents(RGFW_bool queue);
 
 /**!
  * @brief Sets the callback function for the event.
+ * @param the event type for the callback
  * @param func The function to be called when the event is triggered.
  * @return The previously set callback function, if any.
 */
-RGFWDEF RGFW_genericfunc RGFW_setEventCallback(RGFW_eventType type, RGFW_genericfunc func);
+RGFWDEF RGFW_genericFunc RGFW_setEventCallback(RGFW_eventType type, RGFW_genericFunc func);
+
+/**!
+ * @brief Sets the callback function for two continuous events.
+ * @param func The function to be called when the event is triggered.
+ * @param [OUTPUT] The previously set callback function for the first event, if any.
+ * @param [OUTPUT] The previously set callback function for the second event, if any.
+*/
+RGFWDEF void RGFW_setDualEventCallback(RGFW_eventType type, RGFW_genericFunc func, RGFW_genericFunc* first, RGFW_genericFunc* second);
+
+/**!
+ * @brief Sets the callback function for all events.
+ * @param func The function to be called when the event is triggered.
+ * @param [OUTPUT] a structure that holds an array of all the event callbacks
+*/
+RGFWDEF void RGFW_setAllEventCallbacks(RGFW_genericFunc func, RGFW_callbacks* callbacks);
 
 /**!
 * @brief check all the events until there are none left and updates window structure attributes
@@ -2299,7 +2281,7 @@ RGFWDEF void RGFW_writeClipboard(const char* text, u32 textLen);
  * @param func The function pointer to be used as the debug callback.
  * @return The previously set debug callback function.
 */
-RGFWDEF RGFW_debugfunc RGFW_setDebugCallback(RGFW_debugfunc func);
+RGFWDEF RGFW_debugFunc RGFW_setDebugCallback(RGFW_debugFunc func);
 
 /**!
  * @brief Sends a debug message manually through the currently set debug callback.
@@ -3080,8 +3062,8 @@ struct RGFW_info {
 
 	RGFW_mouse* hiddenMouse;
 
-	RGFW_debugfunc debugCallbackSrc;
-	RGFW_genericfunc callbacks[RGFW_eventCount];
+	RGFW_debugFunc debugCallbackSrc;
+	RGFW_genericFunc callbacks[RGFW_eventCount];
     RGFW_event events[RGFW_MAX_EVENTS]; /* A circular buffer (FIFO), using eventBottom/Len  */
 
 	i32 eventBottom;
@@ -3311,13 +3293,7 @@ const char* RGFW_readClipboard(size_t* len) {
 	return (const char*)str;
 }
 
-/*
-RGFW_IMPLEMENTATION starts with generic RGFW defines
-
-This is the start of keycode data
-*/
-
-
+/* generic RGFW defines */
 
 void RGFW_initKeycodes(void) {
 	RGFW_MEMSET(_RGFW->keycodes, 0, sizeof(_RGFW->keycodes));
@@ -3354,19 +3330,34 @@ void RGFW_resetKey(void) { RGFW_MEMSET(_RGFW->keyboard, 0, sizeof(_RGFW->keyboar
 	this is the end of keycode data
 */
 
-RGFW_genericfunc RGFW_setEventCallback(RGFW_eventType type, RGFW_genericfunc func) {
+RGFW_genericFunc RGFW_setEventCallback(RGFW_eventType type, RGFW_genericFunc func) {
 	RGFW_ASSERT(type > RGFW_eventNone && type < RGFW_eventCount);
 	RGFW_init();
 
-	RGFW_genericfunc old = _RGFW->callbacks[type];
+	RGFW_genericFunc old = _RGFW->callbacks[type];
 	_RGFW->callbacks[type] = func;
 
 	return old;
 }
 
-RGFW_debugfunc RGFW_setDebugCallback(RGFW_debugfunc func) {
+void RGFW_setDualEventCallback(RGFW_eventType type, RGFW_genericFunc func, RGFW_genericFunc* first, RGFW_genericFunc* second) {
+	RGFW_genericFunc func1 = RGFW_setEventCallback(type, func);
+	RGFW_genericFunc func2 = RGFW_setEventCallback(type + 1, func);
+
+	if (first) *first = func1;
+	if (second) *second = func2;
+}
+
+void RGFW_setAllEventCallbacks(RGFW_genericFunc func, RGFW_callbacks* callbacks) {
+	for (RGFW_eventType i = RGFW_eventNone + 1; i < RGFW_eventCount; i++) {
+		if (callbacks) callbacks->arr[i] = _RGFW->callbacks[i];
+		RGFW_setEventCallback(i, func);
+	}
+}
+
+RGFW_debugFunc RGFW_setDebugCallback(RGFW_debugFunc func) {
 	RGFW_init();
-	RGFW_debugfunc prev = _RGFW->debugCallbackSrc;
+	RGFW_debugFunc prev = _RGFW->debugCallbackSrc;
 	_RGFW->debugCallbackSrc = func;
 	return prev;
 }

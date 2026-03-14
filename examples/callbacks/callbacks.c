@@ -194,8 +194,8 @@ int main(void) {
 	RGFW_setEventCallback(RGFW_dataDrop, dropfunc);
 	RGFW_setEventCallback(RGFW_dataDrag, dragfunc);
 	RGFW_setEventCallback(RGFW_keyChar, keyCharfunc);
-	RGFW_setEventCallback(RGFW_keyPressed, (RGFW_genericfunc)keyfunc);
-	RGFW_setEventCallback(RGFW_keyReleased, (RGFW_genericfunc)keyfunc);
+	RGFW_setEventCallback(RGFW_keyPressed, (RGFW_genericFunc)keyfunc);
+	RGFW_setEventCallback(RGFW_keyReleased, (RGFW_genericFunc)keyfunc);
 	RGFW_setEventCallback(RGFW_mouseButtonPressed, mousebuttonfunc);
 	RGFW_setEventCallback(RGFW_mouseButtonReleased, mousebuttonfunc);
 	RGFW_setEventCallback(RGFW_monitorConnected, monitorfunc);

@@ -47,7 +47,7 @@ int main(void) {
       RGFW_createWindow("Vulkan Example", 0, 0, 500, 500,
                         RGFW_windowAllowDND | RGFW_windowCenter);
   RGFW_window_setExitKey(win, RGFW_escape);
-  RGFW_setEventCallback(RGFW_mousePosChanged, (RGFW_genericfunc)mousePosCallback);
+  RGFW_setEventCallback(RGFW_mousePosChanged, (RGFW_genericFunc)mousePosCallback);
 
   vulkanContext ctx;
 
