@@ -3264,8 +3264,7 @@ struct RGFW_info {
         RGFW_window* kbOwner;
 		RGFW_window* mouseOwner; /* what window has access to the mouse */
 
-		// wayland key repeat data
-		u32 last_key;
+		u32 last_key;  /* wayland key repeat data */
 		i32 wl_repeat_info_rate, wl_repeat_info_delay;
 		u32 last_key_time;
     #endif
@@ -9004,14 +9003,16 @@ static void RGFW_wl_keyboard_key(void* data, struct wl_keyboard *keyboard, u32 s
 	RGFW_updateKeyMods(RGFW_key_win, RGFW_BOOL(xkb_keymap_mod_get_index(RGFW->keymap, "Lock")), RGFW_BOOL(xkb_keymap_mod_get_index(RGFW->keymap, "Mod2")), RGFW_BOOL(xkb_keymap_mod_get_index(RGFW->keymap, "ScrollLock")));
 	RGFW_keyCallback(RGFW_key_win, (u8)RGFWkey, RGFW_key_win->internal.mod, RGFW_window_isKeyDown(RGFW_key_win, (u8)RGFWkey), RGFW_BOOL(state));
 
-	// we the send the event at the moment we receive it, and
-	// repeated keypresses will be handled at RGFW_pollEvents
-	// if the compositor doesn't support proxy (seat?) version
-	// of at least 4, it won't initialize wl_repeat_info_rate,
-	// and by spec, rate of 0 means disabled, thus repeating
-	// keys are disabled by being zero-initialized
+	/* [comment by Kala Telo (@kala-telo) and edited by Riley Mabb (@ColleagueRiley)]
+		we send the event at the moment we receive it, and
+		repeated key presses will be handled by RGFW_pollEvents
+		if the compositor doesn't support proxy (seat?) version
+		of at least 4, it won't initialize wl_repeat_info_rate,
+		and by spec, rate of 0 means disabled, thus repeating
+		keys are disabled by being zero-initialized
+	*/
 	RGFW->last_key = state ? key : 0;
-	RGFW->last_key_time = time+(u32)_RGFW->wl_repeat_info_delay;
+	RGFW->last_key_time = time + (u32)_RGFW->wl_repeat_info_delay;
 	if (state) {
 		RGFW_wl_send_key_event(_RGFW->last_key);
 	}
@@ -9887,10 +9888,10 @@ void RGFW_FUNC(RGFW_pollEvents) (void) {
 		}
 	}
 	if (_RGFW->wl_repeat_info_rate != 0 && _RGFW->last_key) {
-		u32 now = (u32)(RGFW_linux_getTimeNS()/1000000);
+		u32 now = (u32)(RGFW_linux_getTimeNS() / 1000000);
 		if (now > _RGFW->last_key_time) {
 			RGFW_wl_send_key_event(_RGFW->last_key);
-			_RGFW->last_key_time = now + 1000/(u32)_RGFW->wl_repeat_info_rate;
+			_RGFW->last_key_time = now + 1000 / (u32)_RGFW->wl_repeat_info_rate;
 		}
 	}
 
