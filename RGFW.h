@@ -11408,7 +11408,7 @@ RGFW_key RGFW_physicalToMappedKey(RGFW_key key) {
     return RGFW_keyNULL;
 }
 
-RGFW_bool RGFW_FUNC(RGFW_window_fetchSize) (RGFW_window* win, i32* w, i32* h) {
+RGFW_bool RGFW_window_fetchSize(RGFW_window* win, i32* w, i32* h) {
     RECT area;
     GetClientRect(win->src.window, &area);
 
@@ -13685,7 +13685,7 @@ RGFW_key RGFW_physicalToMappedKey(RGFW_key key) {
 	return key;
 }
 
-RGFW_bool RGFW_FUNC(RGFW_window_fetchSize) (RGFW_window* win, i32* w, i32* h) {
+RGFW_bool RGFW_window_fetchSize(RGFW_window* win, i32* w, i32* h) {
 	NSRect content = ((NSRect(*)(id, SEL))abi_objc_msgSend_stret)((id)win->src.view, sel_registerName("frame"));
 
 	win->w = (i32)content.size.width;
@@ -15096,7 +15096,7 @@ RGFW_key RGFW_physicalToMappedKey(RGFW_key key) {
 	return key;
 }
 
-RGFW_bool RGFW_FUNC(RGFW_window_fetchSize) (RGFW_window* win, i32* w, i32* h) {
+RGFW_bool RGFW_window_fetchSize(RGFW_window* win, i32* w, i32* h) {
 	return RGFW_window_getSize(win, w, h);
 }
 
