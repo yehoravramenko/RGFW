@@ -15509,6 +15509,7 @@ typedef RGFW_window* (*RGFW_createWindowPlatform_ptr)(const char* name, RGFW_win
 typedef RGFW_bool (*RGFW_getMouse_ptr)(i32* x, i32* y);
 typedef RGFW_key (*RGFW_physicalToMappedKey_ptr)(RGFW_key key);
 typedef void (*RGFW_pollEvents_ptr)(void);
+typedef RGFW_bool (*RGFW_window_fetchSize_ptr)(RGFW_window* win, i32* w, i32* h);
 typedef void (*RGFW_pollMonitors_ptr)(void);
 typedef void (*RGFW_window_move_ptr)(RGFW_window* win, i32 x, i32 y);
 typedef void (*RGFW_window_resize_ptr)(RGFW_window* win, i32 w, i32 h);
@@ -15583,7 +15584,8 @@ typedef struct RGFW_FunctionPointers {
     RGFW_createWindowPlatform_ptr createWindowPlatform;
     RGFW_getMouse_ptr getGlobalMouse;
 	RGFW_physicalToMappedKey_ptr physicalToMappedKey;
-    RGFW_pollEvents_ptr pollEvents;
+    RGFW_window_fetchSize_ptr window_fetchSize;
+	RGFW_pollEvents_ptr pollEvents;
     RGFW_pollMonitors_ptr pollMonitors;
     RGFW_window_move_ptr window_move;
     RGFW_window_resize_ptr window_resize;
@@ -15652,6 +15654,7 @@ RGFW_window* RGFW_createWindowPlatform(const char* name, RGFW_windowFlags flags,
 RGFW_bool RGFW_getGlobalMouse(i32* x, i32* y) { return RGFW_api.getGlobalMouse(x, y); }
 RGFW_key RGFW_physicalToMappedKey(RGFW_key key) { return RGFW_api.physicalToMappedKey(key); }
 void RGFW_pollEvents(void) { RGFW_api.pollEvents(); }
+void RGFW_window_fetchSize(void) { RGFW_api.window_fetchSize(); }
 void RGFW_pollMonitors(void) { RGFW_api.pollMonitors(); }
 void RGFW_window_move(RGFW_window* win, i32 x, i32 y) { RGFW_api.window_move(win, x, y); }
 void RGFW_window_resize(RGFW_window* win, i32 w, i32 h) { RGFW_api.window_resize(win, w, h); }
@@ -15731,6 +15734,7 @@ void RGFW_load_X11(void) {
     RGFW_api.getGlobalMouse = RGFW_getGlobalMouse_X11;
     RGFW_api.physicalToMappedKey = RGFW_physicalToMappedKey_X11;
     RGFW_api.pollEvents = RGFW_pollEvents_X11;
+    RGFW_api.window_fetchSize = RGFW_window_fetchSize_X11;
     RGFW_api.pollMonitors = RGFW_pollMonitors_X11;
     RGFW_api.window_move = RGFW_window_move_X11;
     RGFW_api.window_resize = RGFW_window_resize_X11;
@@ -15799,6 +15803,7 @@ void RGFW_load_Wayland(void) {
     RGFW_api.getGlobalMouse = RGFW_getGlobalMouse_Wayland;
     RGFW_api.physicalToMappedKey = RGFW_physicalToMappedKey_Wayland;
     RGFW_api.pollEvents = RGFW_pollEvents_Wayland;
+    RGFW_api.window_fetchSize = RGFW_window_fetchSize_Wayland;
     RGFW_api.pollMonitors = RGFW_pollMonitors_Wayland;
     RGFW_api.window_move = RGFW_window_move_Wayland;
     RGFW_api.window_resize = RGFW_window_resize_Wayland;
