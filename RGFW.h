@@ -7426,7 +7426,7 @@ RGFW_mouse* RGFW_FUNC(RGFW_createMouseStandard) (RGFW_mouseIcons mouse) {
 		case RGFW_mouseResizeAll: mouseIcon = XC_fleur; break;
         case RGFW_mouseNotAllowed: mouseIcon = XC_pirate; break;
         case RGFW_mousePointingHand: mouseIcon = XC_hand2; break;
-		default: return RGFW_FALSE;
+		default: return NULL;
 	}
 
 	Cursor cursor = XCreateFontCursor(_RGFW->display, mouseIcon);
@@ -9986,7 +9986,7 @@ RGFW_mouse* RGFW_FUNC(RGFW_createMouseStandard) (RGFW_mouseIcons mouse) {
 		case RGFW_mouseNotAllowed:   cursorName = (char*)"not-allowed"; break;
 		case RGFW_mouseWait:         cursorName = (char*)"watch"; break;
 		case RGFW_mouseProgress:     cursorName = (char*)"watch"; break;
-		default:                     return RGFW_FALSE;
+		default:                     return NULL;
 	}
 
 	win->src.using_custom_cursor = RGFW_FALSE;
@@ -11872,7 +11872,7 @@ RGFW_mouse* RGFW_createMouseStandard(RGFW_mouseIcons mouse) {
 		case RGFW_mouseResizeS: mouseIcon = OCR_SIZENS; break;
 		case RGFW_mouseResizeSW: mouseIcon = OCR_SIZENESW; break;
 		case RGFW_mouseResizeW: mouseIcon = OCR_SIZEWE; break;
-		default: return RGFW_FALSE;
+		default: return NULL;
     }
 
 	char* icon = MAKEINTRESOURCEA(mouseIcon);
@@ -13917,35 +13917,31 @@ id NSCursor_arrowStr(const char* str) {
 }
 
 RGFW_mouse* RGFW_createMouseStandard(RGFW_mouseIcons mouse) {
-	const char* cursorSelectorStr;
-	switch (stdMouse) {
-        case RGFW_mouseNormal:    cursorSelectorStr = "arrowCursor"; break;
-        case RGFW_mouseArrow: cursorSelectorStr = "arrowCursor"; break;
-        case RGFW_mouseIbeam: cursorSelectorStr = "IBeamCursor"; break;
-        case RGFW_mouseCrosshair: cursorSelectorStr = "crosshairCursor"; break;
-        case RGFW_mousePointingHand: cursorSelectorStr = "pointingHandCursor"; break;
-        case RGFW_mouseResizeEW: cursorSelectorStr = "resizeLeftRightCursor"; break;
-        case RGFW_mouseResizeE: cursorSelectorStr = "resizeLeftRightCursor"; break;
-        case RGFW_mouseResizeW: cursorSelectorStr = "resizeLeftRightCursor"; break;
-        case RGFW_mouseResizeNS: cursorSelectorStr = "resizeUpDownCursor"; break;
-        case RGFW_mouseResizeN: cursorSelectorStr = "resizeUpDownCursor"; break;
-        case RGFW_mouseResizeS: cursorSelectorStr = "resizeUpDownCursor"; break;
-        case RGFW_mouseResizeNWSE: cursorSelectorStr = "_windowResizeNorthWestSouthEastCursor"; break;
-        case RGFW_mouseResizeNW: cursorSelectorStr = "_windowResizeNorthWestSouthEastCursor"; break;
-        case RGFW_mouseResizeSE: cursorSelectorStr = "_windowResizeNorthWestSouthEastCursor"; break;
-        case RGFW_mouseResizeNESW: cursorSelectorStr = "_windowResizeNorthEastSouthWestCursor"; break;
-        case RGFW_mouseResizeNE: cursorSelectorStr = "_windowResizeNorthEastSouthWestCursor"; break;
-        case RGFW_mouseResizeSW: cursorSelectorStr = "_windowResizeNorthEastSouthWestCursor"; break;
-        case RGFW_mouseResizeAll: cursorSelectorStr = "openHandCursor"; break;
-        case RGFW_mouseNotAllowed: cursorSelectorStr = "operationNotAllowedCursor"; break;
-        case RGFW_mouseWait: cursorSelectorStr = "arrowCursor"; break;
-        case RGFW_mouseProgress: cursorSelectorStr = "arrowCursor"; break;
-        default:
-            return RGFW_FALSE;
+	switch (mouse) {
+        case RGFW_mouseNormal:    cursorSelectorStr = NSCursor_arrowStr("arrowCursor");
+        case RGFW_mouseArrow: cursorSelectorStr = NSCursor_arrowStr("arrowCursor");
+        case RGFW_mouseIbeam: cursorSelectorStr = NSCursor_arrowStr("IBeamCursor");
+        case RGFW_mouseCrosshair: cursorSelectorStr = NSCursor_arrowStr("crosshairCursor");
+        case RGFW_mousePointingHand: cursorSelectorStr = NSCursor_arrowStr("pointingHandCursor");
+        case RGFW_mouseResizeEW: cursorSelectorStr = NSCursor_arrowStr("resizeLeftRightCursor");
+        case RGFW_mouseResizeE: cursorSelectorStr = NSCursor_arrowStr("resizeLeftRightCursor");
+        case RGFW_mouseResizeW: cursorSelectorStr = NSCursor_arrowStr("resizeLeftRightCursor");
+        case RGFW_mouseResizeNS: cursorSelectorStr = NSCursor_arrowStr("resizeUpDownCursor");
+        case RGFW_mouseResizeN: cursorSelectorStr = NSCursor_arrowStr("resizeUpDownCursor");
+        case RGFW_mouseResizeS: cursorSelectorStr = NSCursor_arrowStr("resizeUpDownCursor");
+        case RGFW_mouseResizeNWSE: cursorSelectorStr = NSCursor_arrowStr("_windowResizeNorthWestSouthEastCursor");
+        case RGFW_mouseResizeNW: cursorSelectorStr = NSCursor_arrowStr("_windowResizeNorthWestSouthEastCursor");
+        case RGFW_mouseResizeSE: cursorSelectorStr = NSCursor_arrowStr("_windowResizeNorthWestSouthEastCursor");
+        case RGFW_mouseResizeNESW: cursorSelectorStr = NSCursor_arrowStr("_windowResizeNorthEastSouthWestCursor");
+        case RGFW_mouseResizeNE: cursorSelectorStr = NSCursor_arrowStr("_windowResizeNorthEastSouthWestCursor");
+        case RGFW_mouseResizeSW: cursorSelectorStr = NSCursor_arrowStr("_windowResizeNorthEastSouthWestCursor");
+        case RGFW_mouseResizeAll: cursorSelectorStr = NSCursor_arrowStr("openHandCursor";
+        case RGFW_mouseNotAllowed: cursorSelectorStr = NSCursor_arrowStr("operationNotAllowedCursor";
+        case RGFW_mouseWait: return NSCursor_arrowStr("arrowCursor";
+        case RGFW_mouseProgress: return NSCursor_arrowStr("arrowCursor");
+        default: return NULL;
     }
-
-	id mouse = NSCursor_arrowStr(cursorSelectorStr);
-	return (RGFW_mouse*)mouse;
+	return NULL;
 }
 
 RGFW_mouse* RGFW_createMouse(u8* data, i32 w, i32 h, RGFW_format format) {
