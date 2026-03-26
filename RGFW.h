@@ -15084,7 +15084,6 @@ void RGFW_window_resize(RGFW_window* win, i32 w, i32 h) {
 }
 
 RGFW_mouse* RGFW_createMouseStandard(RGFW_mouseIcons mouse) {
-	RGFW_UNUSED(win);
 	char* cursorName = NULL;
 
 	switch (mouse) {
@@ -15109,11 +15108,11 @@ RGFW_mouse* RGFW_createMouseStandard(RGFW_mouseIcons mouse) {
 		case RGFW_mouseNotAllowed:   cursorName = (char*)"not-allowed"; break;
 		case RGFW_mouseWait:         cursorName = (char*)"wait"; break;
 		case RGFW_mouseProgress:     cursorName = (char*)"progress"; break;
-		default:                     return RGFW_FALSE;
+		default:                     return NULL;
 	}
 
 	EM_ASM( { document.getElementById("canvas").style.cursor = UTF8ToString($0); }, cursorName);
-	return RGFW_TRUE;
+	return NULL;
 }
 
 /* NOTE: I don't know if this is possible */
