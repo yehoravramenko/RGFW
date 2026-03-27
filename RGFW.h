@@ -13906,7 +13906,9 @@ id NSCursor_arrowStr(const char* str);
 id NSCursor_arrowStr(const char* str) {
 	void* nclass = objc_getClass("NSCursor");
 	SEL func = sel_registerName(str);
-	return (id) objc_msgSend_id(nclass, func);
+	id mouse = (id) objc_msgSend_id(nclass, func);
+	NSRetain(mouse);
+	return mouse;
 }
 
 RGFW_mouse* RGFW_createMouseStandard(RGFW_mouseIcons mouse) {
