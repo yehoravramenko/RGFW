@@ -10829,15 +10829,15 @@ LRESULT CALLBACK WndProcW(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				if (length == 0)
 					continue;
 
-				WCHAR buffer[RGFW_MAX_PATH * 2];
-				if (length > (RGFW_MAX_PATH * 2) - 1)
-					length = RGFW_MAX_PATH * 2;
+				WCHAR* buffer = (WCHAR*)RGFW_ALLOC(sizeof(WCHAR) * (length + 1));
+				char* cbuffer = (char*)RGFW_ALLOC(length + 1);
 
 				DragQueryFileW(drop, i, buffer, length + 1);
 
-				RGFW_createUTF8FromWideStringWin32(buffer, files[i], RGFW_MAX_PATH);
+				RGFW_createUTF8FromWideStringWin32(buffer, cbuffer, length);
 
-				files[i][RGFW_MAX_PATH - 1] = '\0';
+				RGFW_FREE(buffer);
+				RGFW_FREE(cbuffer);
 			}
 
 			DragFinish(drop);
@@ -12918,7 +12918,7 @@ static bool RGFW__osxPerformDragOperation(id self, SEL sel, id sender) {
 		const char *filePath = ((const char* (*)(id, SEL))objc_msgSend)(fileURL, sel_registerName("UTF8String"));
 		int string_count = ((int (*)(id, SEL))objc_msgSend)(fileURL, sel_registerName("count"));
 
-		RGFW_dataDropCallback(win, files, (size_t)string_count + 1, RGFW_dataFile);
+		RGFW_dataDropCallback(win, filePath, (size_t)string_count + 1, RGFW_dataFile);
 	}
 
 	return false;
@@ -14849,8 +14849,8 @@ void EMSCRIPTEN_KEEPALIVE RGFW_handleKeyMods(RGFW_bool capital, RGFW_bool numloc
 	RGFW_keyUpdateKeyModsEx(_RGFW->root, capital, numlock, control, alt, shift, super, scroll);
 }
 
-void EMSCRIPTEN_KEEPALIVE Emscripten_onDrop(size_t count) {
-	RGFW_dataDropCallback(_RGFW->root, _RGFW->dnd_data, count, RGFW_dataFile);
+void EMSCRIPTEN_KEEPALIVE Emscripten_onDrop(char* file, size_t size) {
+	RGFW_dataDropCallback(_RGFW->root, file, size, RGFW_dataFile);
 }
 
 void RGFW_stopCheckEvents(void) {
@@ -14878,14 +14878,6 @@ void RGFW_window_blitSurface(RGFW_window* win, RGFW_surface* surface) {
 }
 
 void RGFW_surface_freePtr(RGFW_surface* surface) { }
-
-void EMSCRIPTEN_KEEPALIVE RGFW_makeSetValue(size_t index, char* file) {
-	/* This seems like a terrible idea, don't replicate this unless you hate yourself or the OS */
-	/* TODO: find a better way to do this
-	*/
-	RGFW_STRNCPY((char*)_RGFW->dnd_data[index], file, RGFW_MAX_PATH - 1);
-	_RGFW->dnd_data[index][RGFW_MAX_PATH - 1] = '\0';
-}
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -15101,7 +15093,6 @@ RGFW_window* RGFW_createWindowPlatform(const char* name, RGFW_windowFlags flags,
             if (e.dataTransfer.file < 0)
 				return;
 
-			var filenamesArray = [];
 			var count = e.dataTransfer.files.length;
 
 			/* Read and save the files to emscripten's files */
@@ -15126,19 +15117,12 @@ RGFW_window* RGFW_createWindowPlatform(const char* name, RGFW_windowFlags flags,
 				};
 
 				reader.readAsArrayBuffer(file);
-				/* This works weird on modern OpenGL */
 				var filename = stringToNewUTF8(path);
 
-				filenamesArray.push(filename);
-
-				Module._RGFW_makeSetValue(i, filename);
+				Module._Emscripten_onDrop(filename, path.length + 1);
+				free(filename);
 			}
 
-			Module._Emscripten_onDrop(count);
-
-			for (var i = 0; i < count; i++) {
-				_free(filenamesArray[i]);
-			}
         }, true);
 
         canvas.addEventListener('dragover', function(e) { e.preventDefault(); return false; }, true);
