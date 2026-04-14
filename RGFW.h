@@ -175,12 +175,6 @@ int main() {
     #endif
 #endif
 
-#ifdef _FEATURES_H
-	#ifndef __USE_POSIX199309
-		#define __USE_POSIX199309
-	#endif
-#endif
-
 #ifndef _POSIX_C_SOURCE
 	#define _POSIX_C_SOURCE 199309L
 	#include <time.h>
@@ -4809,6 +4803,10 @@ void RGFW_window_setDND(RGFW_window* win, RGFW_bool allow) {
 #endif
 
 #if defined(RGFW_X11) || defined(RGFW_MACOS) || defined(RGFW_WASM) || defined(RGFW_WAYLAND)
+#ifndef __USE_POSIX199309
+	#define __USE_POSIX199309
+#endif
+#include <time.h>
 struct timespec;
 #endif
 
