@@ -165,7 +165,7 @@ int main() {
 	#pragma comment(lib, "User32")
 	#pragma comment(lib, "Advapi32")
     #pragma warning( push )
-	#pragma warning( disable : 4996 4191 4127)
+	#pragma warning( disable : 4995 4191 4127)
     #if _MSC_VER < 600
         #define RGFW_C89
     #endif
@@ -173,6 +173,17 @@ int main() {
     #if defined(__STDC__) && !defined(__STDC_VERSION__)
         #define RGFW_C89
     #endif
+#endif
+
+#ifdef _FEATURES_H
+	#ifndef __USE_POSIX199309
+		#define __USE_POSIX199309
+	#endif
+#endif
+
+#ifndef _POSIX_C_SOURCE
+	#define _POSIX_C_SOURCE 199309L
+	#include <time.h>
 #endif
 
 #if defined(RGFW_EGL) && !defined(RGFW_OPENGL)
@@ -4798,10 +4809,6 @@ void RGFW_window_setDND(RGFW_window* win, RGFW_bool allow) {
 #endif
 
 #if defined(RGFW_X11) || defined(RGFW_MACOS) || defined(RGFW_WASM) || defined(RGFW_WAYLAND)
-#ifndef __USE_POSIX199309
-	#define __USE_POSIX199309
-#endif
-#include <time.h>
 struct timespec;
 #endif
 
