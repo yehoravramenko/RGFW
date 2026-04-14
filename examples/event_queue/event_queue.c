@@ -73,7 +73,7 @@ int main(void) {
                     printf("Refresh\n");
                     break;
                 case RGFW_dataDrop: {
-                    printf("dropped : %s\n", event.drop.value);
+                    printf("dropped : %s\n", event.drop.value->data);
                     break;
                 }
                 case RGFW_dataDrag:
